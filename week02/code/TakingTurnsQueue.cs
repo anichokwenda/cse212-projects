@@ -23,7 +23,6 @@ public class TakingTurnsQueue
         var person = new Person(name, turns);
         _people.Enqueue(person);
     }
-
     /// <summary>
     /// Get the next person in the queue and return them. The person should
     /// go to the back of the queue again unless the turns variable shows that they 
@@ -31,27 +30,38 @@ public class TakingTurnsQueue
     /// person has an infinite number of turns.  An error exception is thrown 
     /// if the queue is empty.
     /// </summary>
-    public Person GetNextPerson()
-    {
-        if (_people.IsEmpty())
+        public Person GetNextPerson()
         {
-            throw new InvalidOperationException("No one in the queue.");
-        }
-        else
-        {
-            Person person = _people.Dequeue();
-            if (person.Turns > 1)
+            if (_people.IsEmpty())
             {
-                person.Turns -= 1;
-                _people.Enqueue(person);
+                throw new InvalidOperationException("No one in the queue.");
             }
+            else
+            {
+                Person person = _people.Dequeue();
+            // Check turns: if turns is 0 or less (infinite), or if turns > 1 after decrement
+                if (person.Turns <= 0)
+                {
+                // Infinite turns, re-enqueue without changing turns
+                    _people.Enqueue(person);
+                }
+                else if (person.Turns > 1)
+                {
+                    person.Turns -= 1; // decrement turns
+                    _people.Enqueue(person);
+                }
+                else
+                {
+                // turns == 1 means last turn now, so do not re-enqueue
+                    person.Turns -= 1; // decrement turns to zero
+                }
 
-            return person;
+                return person;
+            }
+        }
+
+        public override string ToString()
+        {
+            return _people.ToString();
         }
     }
-
-    public override string ToString()
-    {
-        return _people.ToString();
-    }
-}
