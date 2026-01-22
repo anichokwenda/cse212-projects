@@ -1,5 +1,24 @@
+using System;
+using System.Collections.Generic;
+using System.IO;
 using System.Text.Json;
 
+
+public class FeatureCollection
+{
+    public List<Feature> Features { get; set; }
+}
+
+public class Feature
+{
+    public Properties Properties { get; set; }
+}
+
+public class Properties
+{
+    public string Place { get; set; }
+    public double? Mag { get; set; }
+}
 public static class SetsAndMaps
 {
     /// <summary>
@@ -22,7 +41,28 @@ public static class SetsAndMaps
     public static string[] FindPairs(string[] words)
     {
         // TODO Problem 1 - ADD YOUR CODE HERE
-        return [];
+        var wordSet = new HashSet<string>(words);
+        var result = new List<string>();
+        var visited = new HashSet<string>();
+
+        foreach (var w in words)
+        {
+            // skip if both letters are same, e.g., "aa"
+            if (w[0] == w[1])
+               continue;
+
+            var reversed = new string(new[] { w[1], w[0] });
+
+            // if reversed exists and not already recorded
+            if (wordSet.Contains(reversed) && !visited.Contains(w) && !visited.Contains(reversed))
+            {
+                result.Add($"{w} & {reversed}");
+                visited.Add(w);
+                visited.Add(reversed);
+            }
+        }
+
+        return result.ToArray();
     }
 
     /// <summary>
@@ -38,15 +78,27 @@ public static class SetsAndMaps
     /// <returns>fixed array of divisors</returns>
     public static Dictionary<string, int> SummarizeDegrees(string filename)
     {
+        {
         var degrees = new Dictionary<string, int>();
         foreach (var line in File.ReadLines(filename))
         {
             var fields = line.Split(",");
-            // TODO Problem 2 - ADD YOUR CODE HERE
+            if (fields.Length > 3) // Ensure column 4 exists
+            {
+                var degree = fields[3].Trim();
+                if (degree.Length > 0)
+                {
+                    if (degrees.ContainsKey(degree))
+                        degrees[degree]++;
+                    else
+                        degrees[degree] = 1;
+                }
+            }
         }
 
         return degrees;
     }
+}
 
     /// <summary>
     /// Determine if 'word1' and 'word2' are anagrams.  An anagram
@@ -66,9 +118,28 @@ public static class SetsAndMaps
     /// </summary>
     public static bool IsAnagram(string word1, string word2)
     {
-        // TODO Problem 3 - ADD YOUR CODE HERE
-        return false;
+       // Normalize: remove spaces and convert to lowercase
+        word1 = new string(word1.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToLower();
+        word2 = new string(word2.Where(c => !char.IsWhiteSpace(c)).ToArray()).ToLower();
+
+        if (word1.Length != word2.Length)
+            return false;
+
+        var charCounts = new Dictionary<char, int>();
+
+        foreach (var c in word1)
+            charCounts[c] = charCounts.GetValueOrDefault(c) + 1;
+
+        foreach (var c in word2)
+        {
+            if (!charCounts.ContainsKey(c) || charCounts[c] == 0)
+                return false;
+            charCounts[c]--;
+        }
+
+        return charCounts.Values.All(count => count == 0);
     }
+
 
     /// <summary>
     /// This function will read JSON (Javascript Object Notation) data from the 
@@ -101,6 +172,17 @@ public static class SetsAndMaps
         // on those classes so that the call to Deserialize above works properly.
         // 2. Add code below to create a string out each place a earthquake has happened today and its magitude.
         // 3. Return an array of these string descriptions.
-        return [];
+        if (featureCollection?.Features == null)
+            return new string[0];
+        var result = new List<string>();
+
+        foreach (var feature in featureCollection.Features)
+        {
+            var place = feature.Properties?.Place ?? "Unknown location";
+            var mag = feature.Properties?.Mag ?? 0;
+            result.Add($"Place: {place}, Magnitude: {mag}");
+        }
+
+        return result.ToArray();
     }
 }
