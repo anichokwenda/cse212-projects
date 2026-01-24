@@ -25,7 +25,6 @@ public class Maze
         _mazeMap = mazeMap;
     }
 
-    // TODO Problem 4 - ADD YOUR CODE HERE
     /// <summary>
     /// Check to see if you can move left.  If you can, then move.  If you
     /// can't move, throw an InvalidOperationException with the message "Can't go that way!".
@@ -33,8 +32,8 @@ public class Maze
     public void MoveLeft()
     {
         if (!_mazeMap.TryGetValue((_currX, _currY), out var directions) || directions[0] == false)
-        throw new InvalidOperationException("Can't go that way!");
-    _currX--;
+            throw new InvalidOperationException("Can't go that way!");
+        _currX--;
     }
 
     /// <summary>
@@ -44,8 +43,8 @@ public class Maze
     public void MoveRight()
     {
         if (!_mazeMap.TryGetValue((_currX, _currY), out var directions) || directions[1] == false)
-        throw new InvalidOperationException("Can't go that way!");
-    _currX++;
+            throw new InvalidOperationException("Can't go that way!");
+        _currX++;
     }
 
     /// <summary>
@@ -55,8 +54,8 @@ public class Maze
     public void MoveUp()
     {
         if (!_mazeMap.TryGetValue((_currX, _currY), out var directions) || directions[2] == false)
-        throw new InvalidOperationException("Can't go that way!");
-    _currY--;
+            throw new InvalidOperationException("Can't go that way!");
+        _currY--;
     }
 
     /// <summary>
@@ -66,8 +65,8 @@ public class Maze
     public void MoveDown()
     {
         if (!_mazeMap.TryGetValue((_currX, _currY), out var directions) || directions[3] == false)
-        throw new InvalidOperationException("Can't go that way!");
-    _currY++;
+            throw new InvalidOperationException("Can't go that way!");
+        _currY++;
     }
 
     public string GetStatus()
@@ -75,3 +74,4 @@ public class Maze
         return $"Current location (x={_currX}, y={_currY})";
     }
 }
+
